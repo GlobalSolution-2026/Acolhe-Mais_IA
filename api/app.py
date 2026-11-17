@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 import joblib
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 def validar_campos(dados, obrigatorios):
     if not isinstance(dados, dict):
@@ -53,7 +54,6 @@ def verificar_urgencia(dados, pacote):
     return {'urgente': bool(p >= pacote['limiar']),
             'pontuacao_risco': round(p, 4), 'limiar': float(pacote['limiar'])}
 
-
 def faixa_da_antecedencia(dias):
     if dias == 0: return 'mesmo_dia'
     if dias <= 7: return '1_a_7'
@@ -99,6 +99,7 @@ def criar_app(pasta_modelos=None):
 
     app = Flask(__name__)
     app.json.ensure_ascii = False
+    CORS(app)
 
     @app.get('/status')
     def status():
