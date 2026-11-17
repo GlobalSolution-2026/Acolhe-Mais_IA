@@ -1,0 +1,59 @@
+GLOBAL SOLUTION 2026/2 – ACOLHE+
+Inteligência Artificial: Modelo 1 (risco de falta) e Modelo 2 (verificação de urgência)
+
+
+INTEGRANTES
+
+Ana Carolina Orcelli Bautzer – RM 570281 – 1TDSPI
+Cauã Mathias Bertini – RM 570451 – 1TDSPI
+Eduardo Lima de Souza – RM 570412 – 1TDSPI
+Nicolas Frazão Vieira Molina – RM 568780 – 1TDSPO
+Nicolas Rodrigues Martins – RM 573178 – 1TDSPW
+
+
+CONTEÚDO DA ENTREGA
+
+gs-ia/
+  notebooks/   notebooks dos dois modelos (Google Colab)
+  dados/       cópias dos CSV originais do Kaggle
+  modelos/     modelo_falta.joblib e modelo_urgencia.joblib
+  api/         app.py e requirements.txt
+
+
+COMO EXECUTAR A API
+
+Requisito: Python 3.12 (versão usada na validação).
+
+1. Abra o terminal na pasta gs-ia.
+2. Instale as dependências:
+   python -m pip install -r api/requirements.txt
+3. Inicie a API:
+   python api/app.py
+
+A API roda em http://127.0.0.1:5000 e carrega os dois modelos da pasta modelos/.
+
+
+ROTAS
+
+GET  /status
+     Confirma que a API está no ar e mostra os modelos carregados.
+
+POST /prever-falta
+     Calcula o risco de falta de uma consulta e a antecedência do pedido de
+     confirmação (3 dias úteis para risco alto, 2 para risco baixo).
+     Exemplo de corpo (JSON):
+     {"idade": 35, "sexo": "F", "antecedencia_dias": 15, "dia_semana": 1,
+      "sms_recebido": 0, "faltas_anteriores": 0, "bairro": "JARDIM CAMBURI"}
+     dia_semana: 0 = segunda ... 4 = sexta. bairro é opcional.
+
+POST /verificar-urgencia
+     Verificação extra antes de um resultado não urgente do questionário.
+     O modelo só pode elevar a orientação, nunca rebaixar.
+     Exemplo de corpo (JSON):
+     {"idade": 45, "sexo": "F", "trauma": false, "dor": true,
+      "nota_dor": 7, "alerta": true}
+     idade de 18 a 120; nota_dor de 1 a 10 quando dor = true
+     (sem dor, nota_dor pode ser omitida).
+
+Entradas válidas retornam 200. Campos ausentes ou valores inválidos retornam 400
+com uma mensagem explicando o erro.
